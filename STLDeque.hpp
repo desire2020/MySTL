@@ -8,8 +8,6 @@
 #define container_is_empty std::out_of_range("container is empty")
 namespace mystl
 {
-	
-	
 	template<class T, int node_size = 512>
 	class deque : public SequenceContainer<T>
 	{
@@ -25,13 +23,13 @@ namespace mystl
 				protected:
 					it_con context;
 					it_idx index;
-					deque<T> *title;
+					deque<T, node_size> *title;
 				public:
-					friend class deque<T> :: const_iterator;
+					friend class deque<T, node_size> :: const_iterator;
 					iterator() {}
-					iterator(const typename deque<T> :: const_iterator& target) : context(target.context), index(target.index), title(target.title) {}
-					iterator(const it_con& tg_con, it_idx tg_idx, const deque<T>* tg_tit) : context(tg_con), index(tg_idx) {
-						title = (deque<T>*)tg_tit; 
+					iterator(const typename deque<T, node_size> :: const_iterator& target) : context(target.context), index(target.index), title(target.title) {}
+					iterator(const it_con& tg_con, it_idx tg_idx, const deque<T, node_size>* tg_tit) : context(tg_con), index(tg_idx) {
+						title = (deque<T, node_size>*)tg_tit; 
 					}
 					
 					iterator operator+(const int &n)
@@ -193,22 +191,22 @@ namespace mystl
 					inline bool operator!=(const const_iterator &rhs) {
 						return !((*this) == rhs);
 					}
-					friend iterator deque<T> :: insert(iterator pos, const T& value);
-					friend iterator deque<T> :: erase(iterator pos);
+					friend iterator deque<T, node_size> :: insert(iterator pos, const T& value);
+					friend iterator deque<T, node_size> :: erase(iterator pos);
 			};
 			class const_iterator : public SequenceContainer<T> :: const_iterator
 			{
 				protected:
 					it_con context;
 					it_idx index;
-					deque<T> *title;
+					deque<T, node_size> *title;
 				public:
-					friend class deque<T> :: const_iterator;
+					friend class deque<T, node_size> :: iterator;
 					const_iterator() {}
-					const_iterator(const it_con& tg_con, it_idx tg_idx, const deque<T>* tg_tit) : context(tg_con), index(tg_idx), title(tg_tit) {
-						title = (deque<T>*)tg_tit; 
+					const_iterator(const it_con& tg_con, it_idx tg_idx, const deque<T, node_size>* tg_tit) : context(tg_con), index(tg_idx), title(tg_tit) {
+						title = (deque<T, node_size>*)tg_tit; 
 					}
-					const_iterator(const typename deque<T> :: iterator& target) : context(target.context), index(target.index), title(target.title) {}
+					const_iterator(const typename deque<T, node_size> :: iterator& target) : context(target.context), index(target.index), title(target.title) {}
 					const_iterator operator+(const int &n)
 					{
 						const_iterator tmp(*this);
@@ -372,7 +370,7 @@ namespace mystl
 				(*inside.begin()).reserve(node_size + 1);
 				value_size = 0;
 			}
-			deque(const deque<T> &other) {
+			deque(const deque<T, node_size> &other) {
 				inside = other.inside;
 				value_size = other.value_size;
 			}
@@ -432,7 +430,9 @@ namespace mystl
 				it = into_plat.insert(it, value);
 				if (into_plat.full())
 				{
-					inside.insert(pos.context.next(), vector<T>(into_plat[node_size]));
+					vector<T> tmp(into_plat[node_size]);
+					tmp.reserve(node_size + 1);
+					inside.insert(pos.context.next(), tmp);
 					into_plat.pop_back();
 				}
 				value_size++;
@@ -490,6 +490,7 @@ namespace mystl
 			inline it_con end_list() const {
 				return inside.end();
 			}
+
 	};
 
 };

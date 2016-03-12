@@ -19,7 +19,7 @@ namespace mystl
 			vector(const T& target)
 			{
 				value_capa = 1;
-				value_size = 0;
+				value_size = 1;
 				data = new T[value_capa];
 				data[0] = target;
 			}
