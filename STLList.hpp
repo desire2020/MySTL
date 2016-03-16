@@ -54,7 +54,7 @@ namespace mystl
 			{
 				return value_size;
 			}
-			bool empty()
+			inline bool empty() const
 			{
 				return value_size == 0;
 			}
@@ -130,6 +130,17 @@ namespace mystl
 					iterator& operator++()
 					{
 						real_ptr = real_ptr -> next;
+						return (*this);
+					}
+					iterator operator--(int n)
+					{
+						iterator orig(*this);
+						real_ptr = real_ptr -> last;
+						return orig;
+					}
+					iterator& operator--()
+					{
+						real_ptr = real_ptr -> last;
 						return (*this);
 					}
 					iterator last() const
@@ -215,13 +226,13 @@ namespace mystl
 			}
 			void push_front(const T& target)
 			{
-				insert(iterator(begin().node_address() -> next), target);
+				insert(begin(), target);
 			}
 			void pop_front()
 			{
 				if (empty())
 					throw std :: out_of_range("Invalid pop operation!");
-				erase(iterator(begin().node_address() -> next));
+				erase(begin());
 			}
 			
 			const T& back() const

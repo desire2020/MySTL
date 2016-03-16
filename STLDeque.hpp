@@ -2,13 +2,10 @@
 #define SUI_STLDEQUE
 #include "STLVector.hpp"
 #include "STLList.hpp"
-#define index_out_of_bound std::out_of_range("index error")
-#define invalid_iterator std::out_of_range("iterator error")
-#define runtime_error std::out_of_range("runtime error")
-#define container_is_empty std::out_of_range("container is empty")
+
 namespace mystl
 {
-	template<class T, int node_size = 512>
+	template<class T, int node_size = 320>
 	class deque : public SequenceContainer<T>
 	{
 		protected:
@@ -42,12 +39,12 @@ namespace mystl
 							return tmp;
 						}
 						ncp -= (*(tmp.context)).size() - index.idx() - 1;
-						context++;
+						tmp.context++;
 						if (tmp.context == tmp.title -> end_list())
 						{
 							throw index_out_of_bound;
 						}
-						while (ncp > (*context).size())
+						while (ncp > (*tmp.context).size())
 						{
 							ncp -= (*(tmp.context)).size();
 							tmp.context++;
@@ -56,7 +53,7 @@ namespace mystl
 								throw index_out_of_bound;
 							}
 						}
-						tmp.index = (*context).begin() + (ncp - 1);
+						tmp.index = (*tmp.context).begin() + (ncp - 1);
 						return tmp;
 					}
 					iterator operator-(const int &n)
@@ -69,13 +66,13 @@ namespace mystl
 							return tmp;
 						}
 						ncp -= tmp.index.idx();
-						while (ncp > (*context).size())
+						while (ncp > (*tmp.context).size())
 						{
 							ncp -= (*(tmp.context)).size();
 							if (tmp.context != tmp.title -> beg_list())
 								tmp.context--;
 						}
-						tmp.index = (*context).end() - ncp;
+						tmp.index = (*tmp.context).end() - ncp;
 						return tmp;
 					}
 					int operator-(const iterator &rhs) {
@@ -185,10 +182,8 @@ namespace mystl
 					bool operator==(const const_iterator &rhs) {
 						return (context == rhs.context && index == rhs.index && title == rhs.title);
 					}
-					inline bool operator!=(const iterator &rhs) {
-						return !((*this) == rhs);
-					}
-					inline bool operator!=(const const_iterator &rhs) {
+					template<class Type>
+					inline bool operator!=(const Type &rhs) {
 						return !((*this) == rhs);
 					}
 					friend iterator deque<T, node_size> :: insert(iterator pos, const T& value);
@@ -367,7 +362,7 @@ namespace mystl
 			};
 			deque() {
 				inside.push_back(vector<T>());
-				(*inside.begin()).reserve(node_size + 1);
+				(*inside.begin()).set_max_capa(node_size + 1);
 				value_size = 0;
 			}
 			deque(const deque<T, node_size> &other) {
@@ -379,22 +374,22 @@ namespace mystl
 				value_size = 0;
 			}
 			T& at(const size_t &pos) {
-				return (*(begin() + int(pos)));
+				return (*(begin() + pos));
 			}
 			const T & at(const size_t &pos) const {
-				return (*(begin() + int(pos)));
+				return (*(begin() + pos));
 			}
-			inline T& operator[](const size_t &pos) {
+			T& operator[](const size_t &pos) {
 				return at(pos);
 			}
-			inline const T& operator[](const size_t &pos) const {
+			const T& operator[](const size_t &pos) const {
 				return at(pos);
 			}
 			inline const T& front() const {
 				return (*begin());
 			}
 			inline const T& back() const {
-				return (at(value_size - 1));
+				return (*(end() - 1));
 			}
 			inline iterator begin() const {
 				return iterator(inside.begin(), (*(inside.begin())).begin(), this);
@@ -408,7 +403,7 @@ namespace mystl
 			inline const_iterator cend() const {
 				return const_iterator(end());
 			}
-			inline bool empty()
+			inline bool empty() const
 			{
 				return value_size == 0;
 			}
@@ -428,11 +423,18 @@ namespace mystl
 				vector<T>& into_plat = (*(pos.context));
 				it_idx it = pos.index;
 				it = into_plat.insert(it, value);
-				if (into_plat.full())
+				if (into_plat.totally_full())
 				{
-					vector<T> tmp(into_plat[node_size]);
-					tmp.reserve(node_size + 1);
-					inside.insert(pos.context.next(), tmp);
+					pos.context++;
+					if (pos.context == inside.end() || (*(pos.context)).totally_full())
+					{
+						vector<T> tmp(into_plat[node_size]);
+						tmp.set_max_capa(node_size + 1);
+						inside.insert(pos.context, tmp);
+					} else {
+						vector<T>& after_plat = (*(pos.context));
+						after_plat.insert(after_plat.begin(), into_plat[node_size]);
+					}
 					into_plat.pop_back();
 				}
 				value_size++;
@@ -463,17 +465,21 @@ namespace mystl
 				{
 					throw container_is_empty;
 				}
+				while (inside.back().empty() && (inside.size() > 1))
+					inside.pop_back();
 				vector<T>& into_plat = inside.back();
 				into_plat.pop_back();
-				while (inside.back().empty())
+				while (inside.back().empty() && (inside.size() > 1))
 					inside.pop_back();
 				value_size--;
 			}
-			inline void push_front(const T& value) {
-				inside.push_front(vector<T>(value));
+			void push_front(const T& value) {
+				vector<T> tmp(value);
+				inside.push_front(value);
+				value_size++;
 			}
-			inline void pop_front(const T)
-			{
+			inline void pop_front()
+			{/*
 				if (empty())
 				{
 					throw container_is_empty;
@@ -482,7 +488,11 @@ namespace mystl
 				into_plat.erase(into_plat.begin());
 				while ((*inside.begin()).empty())
 					inside.pop_front();
-				value_size--;
+				value_size--;*/
+				erase(begin());
+			}
+			inline int block_size() const {
+				return node_size;
 			}
 			inline it_con beg_list() const {
 				return inside.begin();

@@ -1,6 +1,10 @@
 #ifndef SUI_STLCONTAINER
 #define SUI_STLCONTAINER
 #include<stdexcept>
+#define index_out_of_bound std::out_of_range("index error")
+#define invalid_iterator std::out_of_range("iterator error")
+#define runtime_error std::out_of_range("runtime error")
+#define container_is_empty std::out_of_range("container is empty")
 namespace mystl
 {
 	template<class T>
@@ -28,7 +32,7 @@ namespace mystl
 					//virtual iterator operator++(int n) = 0;
 					virtual T& operator*() const = 0;
 			};
-			virtual bool empty() = 0;
+			virtual bool empty() const = 0;
 			virtual size_t size() const = 0;
 			virtual void clear() = 0;
 			virtual ~Container() {}

@@ -1,19 +1,23 @@
 #include <iostream>
-#include <string>
+#include <fstream>
+#include "STLDeque.hpp"
 using namespace std;
-
-class A
-{
-	class B
-	{
-		public:
-			int a;
-	};
-};
+using namespace mystl;
+#define cin fin
 int main()
 {
-	ios :: sync_with_stdio(false);
-	A :: B sa;
-	sa.a = 3213;
+	ofstream fout("input.txt");
+	int o;
+	deque<int> mylist;
+	for (int i = 0; i < 100000; i++)
+	{
+		mylist.push_front(i);
+	}
+	deque<int> :: iterator it;
+	for (it = mylist.begin(); it != mylist.end(); it++)
+	{
+		o = *it;
+		fout << o << endl;
+	}
 	return 0;
 }

@@ -1,15 +1,15 @@
-#ifndef SUI_STLSTACK
-#define SUI_STLSTACK
+#ifndef SUI_STLQUEUE
+#define SUI_STLQUEUE
 #include "STLDeque.hpp"
 namespace mystl
 {
 	template<class T, class Tlist = deque<T> >
-	class stack
+	class queue
 	{
 		protected:
 			Tlist data;
 		public:
-			stack() { }
+			queue() { }
 			inline void clear()
 			{
 				data.clear();
@@ -20,11 +20,11 @@ namespace mystl
 			}
 			inline void pop()
 			{
-				data.pop_back();
+				data.pop_front();
 			}
-			inline const T& top()
+			inline const T& front()
 			{
-				return data.back();
+				return data.front();
 			}
 			inline void push(const T& target)
 			{
@@ -34,7 +34,7 @@ namespace mystl
 			{
 				return data.size();
 			}
-			virtual ~stack()
+			virtual ~queue()
 			{
 			}
 	};
