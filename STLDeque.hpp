@@ -198,7 +198,8 @@ namespace mystl
 				public:
 					friend class deque<T, node_size> :: iterator;
 					const_iterator() {}
-					const_iterator(const it_con& tg_con, it_idx tg_idx, const deque<T, node_size>* tg_tit) : context(tg_con), index(tg_idx), title(tg_tit) {
+					const_iterator(const it_con& tg_con, it_idx tg_idx, const deque<T, node_size>* tg_tit) : context(tg_con), index(tg_idx)
+					{
 						title = (deque<T, node_size>*)tg_tit; 
 					}
 					const_iterator(const typename deque<T, node_size> :: iterator& target) : context(target.context), index(target.index), title(target.title) {}
@@ -298,7 +299,7 @@ namespace mystl
 							context++;
 							if (context == (*title).end_list())
 							{
-								(*this) = end();
+								(*this) = (*title).cend();
 								return (*this);
 							}
 							index = (*context).begin();

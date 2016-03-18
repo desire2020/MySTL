@@ -1,23 +1,25 @@
 #include <iostream>
-#include <fstream>
-#include "STLDeque.hpp"
+#include "STLSet.hpp"
 using namespace std;
-using namespace mystl;
-#define cin fin
+//using namespace mystl;
+naive_set<int> myset;
 int main()
 {
-	ofstream fout("input.txt");
-	int o;
-	deque<int> mylist;
-	for (int i = 0; i < 100000; i++)
+	ios :: sync_with_stdio(false);
+	for (int i = 0; i < 3; i++)
 	{
-		mylist.push_front(i);
+		int p;
+		cin >> p;
+		myset.insert(p);
 	}
-	deque<int> :: iterator it;
-	for (it = mylist.begin(); it != mylist.end(); it++)
+	for (int i = 0; i < 3; i++)
 	{
-		o = *it;
-		fout << o << endl;
+		int p;
+		cin >> p;
+		if (myset.exist(p))
+			cout << "YES" << endl;
+		else 
+			cout << "NO" << endl;
 	}
 	return 0;
 }

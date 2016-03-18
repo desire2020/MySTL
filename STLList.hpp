@@ -44,11 +44,32 @@ namespace mystl
 				tail -> last = head;
 				head -> next = tail;
 			}
+			list(const list<T>& other) : value_size(0)
+			{
+				list<T> :: iterator it;
+				head = new node<T>();
+				tail = new node<T>();
+				tail -> last = head;
+				head -> next = tail;
+				for (it = other.begin(); it != other.end(); it++)
+				{
+					push_back(*it);
+				}
+			}
 			virtual ~list()
 			{
 				clear();
 				delete head;
 				delete tail;
+			}
+			list<T>& operator=(const list<T>& other)
+			{
+				clear();
+				list<T> :: iterator it;
+				for (it = other.begin(); it != other.end(); it++)
+				{
+					push_back(*it);
+				}
 			}
 			size_t size() const
 			{
@@ -99,13 +120,13 @@ namespace mystl
 					{
 						return real_ptr;
 					}
-					friend bool operator==(const_iterator target1, const_iterator target2)
-					{
-						return (&(*target1)) == (&(*target2));
+					template<class Type>
+					bool operator==(const Type &rhs) {
+						return real_ptr == rhs.real_ptr;
 					}
-					friend bool operator!=(const_iterator target1, const_iterator target2)
-					{
-						return !(target1 == target2);
+					template<class Type>
+					inline bool operator!=(const Type &rhs) {
+						return !((*this) == rhs);
 					}
 			};
 			class iterator : public SequenceContainer<T> :: iterator
@@ -159,13 +180,13 @@ namespace mystl
 					{
 						return real_ptr;
 					}
-					friend bool operator==(iterator target1, iterator target2)
-					{
-						return (&(*target1)) == (&(*target2));
+					template<class Type>
+					bool operator==(const Type &rhs) {
+						return real_ptr == rhs.real_ptr;
 					}
-					friend bool operator!=(iterator target1, iterator target2)
-					{
-						return !(target1 == target2);
+					template<class Type>
+					inline bool operator!=(const Type &rhs) {
+						return !((*this) == rhs);
 					}
 			};
 			iterator begin() const
@@ -208,7 +229,6 @@ namespace mystl
 				while (start != targ)
 				{
 					start = erase(start);
-					value_size--;
 				}
 				return targ;
 			}
@@ -252,17 +272,6 @@ namespace mystl
 				if (empty()) return;
 				iterator it = begin();
 				erase(it, end());
-			}
-			list(const list<T> &other) : value_size(0) {
-				head = new node<T>();
-				tail = new node<T>();
-				tail -> last = head;
-				head -> next = tail;
-				list<T> :: const_iterator it;
-				for (it = other.begin(); it != const_iterator(other.end()); it++)
-				{
-					push_back(*it);
-				}
 			}
 
 	};
